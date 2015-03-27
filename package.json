@@ -1,0 +1,20 @@
+{
+  "name": "broccoli-po2json",
+  "version": "1.0.0",
+  "description": "A Broccoli plugin for po2json",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "broccoli-plugin",
+    "po2json",
+    "compile"
+  ],
+  "author": "Frode Danielsen <frode@e5r.no>",
+  "license": "ISC",
+  "dependencies": {
+    "broccoli-filter": "^0.1.12",
+    "po2json": "^0.4.1"
+  }
+}
