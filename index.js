@@ -79,7 +79,6 @@ Po2JsonWriter.prototype.write = function (readTree, destDir) {
             }
 
             if (index) {
-                console.log(index);
                 fs.writeSync(fs.openSync(path.join(destPath, 'index.js'), 'w'), index);
             }
         }
