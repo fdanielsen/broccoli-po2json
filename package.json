@@ -1,6 +1,6 @@
 {
   "name": "broccoli-po2json",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A Broccoli plugin for po2json",
   "main": "index.js",
   "scripts": {
@@ -11,10 +11,16 @@
     "po2json",
     "compile"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fdanielsen/broccoli-po2json.git"
+  },
   "author": "Frode Danielsen <frode@e5r.no>",
   "license": "ISC",
   "dependencies": {
-    "broccoli-filter": "^0.1.12",
+    "broccoli-writer": "^0.1.1",
+    "glob": "^5.0.3",
+    "mkdirp": "^0.5.0",
     "po2json": "^0.4.1"
   },
   "devDependencies": {
