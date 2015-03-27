@@ -16,5 +16,8 @@
   "dependencies": {
     "broccoli-filter": "^0.1.12",
     "po2json": "^0.4.1"
+  },
+  "devDependencies": {
+    "broccoli": "^0.15.1"
   }
 }
