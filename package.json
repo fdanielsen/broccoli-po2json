@@ -1,6 +1,6 @@
 {
   "name": "broccoli-po2json",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Broccoli plugin for po2json",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "author": "Frode Danielsen <frode@e5r.no>",
   "license": "ISC",
   "dependencies": {
-    "broccoli-writer": "^0.1.1",
+    "broccoli-caching-writer": "^2.2.0",
     "glob": "^5.0.3",
     "mkdirp": "^0.5.0",
     "po2json": "^0.4.1"

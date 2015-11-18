@@ -5,15 +5,16 @@ var glob = require('glob');
 var mkdirp = require('mkdirp');
 var path = require('path');
 
-var Writer = require('broccoli-writer');
+var Plugin = require('broccoli-caching-writer');
 var po2json = require('po2json');
 
-function Po2JsonWriter (inputTree, options) {
+function Po2JsonWriter (inputNodes, options) {
     if (!(this instanceof Po2JsonWriter)) {
-        return new Po2JsonWriter(inputTree, options);
+        return new Po2JsonWriter(inputNodes, options);
     }
 
-    this.inputTree = inputTree;
+    Plugin.call(this, inputNodes, options);
+
     this.options = options || {};
 
     // Set sensible src and dest directory defaults
@@ -34,55 +35,51 @@ function Po2JsonWriter (inputTree, options) {
     }
 }
 
-Po2JsonWriter.prototype = Object.create(Writer.prototype);
+Po2JsonWriter.prototype = Object.create(Plugin.prototype);
 Po2JsonWriter.prototype.constructor = Po2JsonWriter;
 
 /**
- * Find all .po files within defined source directory, and output
- * compiled JSON/JS versions as .js files directly into the destination
- * directory, using the locale name as file name.
+ * Find all .po files within input paths, and output compiled JSON/JS
+ * versions as .js files directly into the destination directory,
+ * using the locale name as file name.
  */
-Po2JsonWriter.prototype.write = function (readTree, destDir) {
-    var self = this;
+Po2JsonWriter.prototype.build = function () {
+    var
+        self = this,
+        destPath = path.join(this.outputPath, this.options.destDir),
+        compiledLocales,
+        index;
 
-    return readTree(this.inputTree).then(function (srcDir) {
-        var
-            srcPath = path.join(srcDir, self.options.srcDir),
-            destPath = path.join(destDir, self.options.destDir),
-            compiledLocales = [],
-            index;
+    if (!fs.existsSync(destPath)) {
+        mkdirp.sync(destPath);
+    }
 
-        if (!fs.existsSync(destPath)) {
-            mkdirp.sync(destPath);
-        }
-
-        var files = glob.sync('**/*.po', {
-            cwd: srcPath
-        });
-
-        files.forEach(function (file) {
-            var locale = file.split(path.sep)[0];
-            var data = self.compile(path.join(srcPath, file));
+    compiledLocales = this.listFiles()
+        .filter(function (path) {
+            return path.substr(-3) === '.po';
+        })
+        .map(function (file) {
+            var locale = /([^/]+)\/LC_MESSAGES\/.+\.po/.exec(file)[1];
+            var data = self.compile(file);
             var destFile = fs.openSync(path.join(destPath, locale + '.js'), 'w');
 
             fs.writeSync(destFile, data);
 
-            compiledLocales.push(locale);
+            return locale;
         });
 
-        if (compiledLocales.length) {
-            if (self.options.es6) {
-                index = self.generateES6Index(compiledLocales);
-            }
-            else if (self.options.node) {
-                index = self.generateNodeIndex(compiledLocales);
-            }
-
-            if (index) {
-                fs.writeSync(fs.openSync(path.join(destPath, 'index.js'), 'w'), index);
-            }
+    if (compiledLocales.length) {
+        if (this.options.es6) {
+            index = this.generateES6Index(compiledLocales);
         }
-    });
+        else if (this.options.node) {
+            index = this.generateNodeIndex(compiledLocales);
+        }
+
+        if (index) {
+            fs.writeSync(fs.openSync(path.join(destPath, 'index.js'), 'w'), index);
+        }
+    }
 };
 
 /**
